@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 function log(message) {
-        return fs.appendFileSync('./results.json', message);
+        return fs.writeFileSync('./results.json', message);
 }
 
 module.exports = {
