@@ -4,6 +4,7 @@ const request = require('request');
 const dictionary = require('./dictionary');
 const http = require('http');
 let results = {};
+let drops = {};
 
 Object.size = function(obj) {
     var size = 0, key;
@@ -21,7 +22,9 @@ function sleep(milliseconds) {
     } while (currentDate - date < milliseconds);
 }
 const start= new Date().getTime();
-crawl(1);
+const words_max = Object.size(dictionary.words);
+//const words_max = 481;
+crawl(0);
 /*Object.keys(dictionary.words).map(function(objectKey, index) {*/
 function crawl(index) {
     if(index in dictionary.words) {
@@ -29,6 +32,7 @@ function crawl(index) {
         console.log('Working on: ' + value);
         console.log(index + ' from ' + Object.size(dictionary.words));
 
+        setTimeout(() => nextCrawl(index), 200);
         request({
             url: 'http://www.phonemicchart.com/transcribe/?w=' + value
         }, function (error, response, body) {
@@ -37,19 +41,20 @@ function crawl(index) {
             } else {
                 //console.log('body:', body);
                 parseData(value, body);
-                let newIndex = index + 1;
-                crawl(newIndex);
+
                 //logger.log(body.toString());
             }
         });
     } else {
-        logger.log(JSON.stringify(results));
-        const end = new Date().getTime();
-        console.log(`Total execution time: ${(end - start)/1000}s`);
+
     }
 }
 /*});*/
 
+function nextCrawl(index) {
+    let newIndex = index + 1;
+    crawl(newIndex);
+}
 
 function parseData(el_name, html) {
     const {JSDOM} = jsdom;
@@ -59,5 +64,16 @@ function parseData(el_name, html) {
     let item = $('center');
     console.log($(item).text());
     results[el_name] = $(item).text();
+
+    if($(item).length === 0) {
+        drops[Object.size(results)+1] = el_name;
+    }
+
+    if(words_max === Object.size(results)) {
+        logger.log(JSON.stringify(results));
+        logger.dump(JSON.stringify(drops));
+        const end = new Date().getTime();
+        console.log(`Total execution time: ${(end - start)/1000}s`);
+    }
     //logger.log($(item).text() + '\r\n');
 }
