@@ -14,42 +14,35 @@ Object.size = function(obj) {
     return size;
 };
 
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
 const start= new Date().getTime();
-const words_max = Object.size(dictionary.words);
-//const words_max = 481;
-crawl(0);
-/*Object.keys(dictionary.words).map(function(objectKey, index) {*/
+//const words_max = Object.size(dictionary.words);
+
+const words_max = 100;
+const start_index = 300;
+
+crawl(start_index);
 function crawl(index) {
-    if(index in dictionary.words) {
+    if(index in dictionary.words && index < start_index+words_max) {
         let value = dictionary.words[index];
         console.log('Working on: ' + value);
         console.log(index + ' from ' + Object.size(dictionary.words));
 
         setTimeout(() => nextCrawl(index), 200);
         request({
-            url: 'http://www.phonemicchart.com/transcribe/?w=' + value
+            url: 'https://www.wordhippo.com/what-is/sentences-with-the-word/' + value+'.html'
         }, function (error, response, body) {
             if (error) {
                 console.log(error);
             } else {
-                //console.log('body:', body);
                 parseData(value, body);
-
-                //logger.log(body.toString());
+                logger.dump(body);
+                //
             }
         });
     } else {
 
     }
 }
-/*});*/
 
 function nextCrawl(index) {
     let newIndex = index + 1;
@@ -59,21 +52,21 @@ function nextCrawl(index) {
 function parseData(el_name, html) {
     const {JSDOM} = jsdom;
     const dom = new JSDOM(html);
-    const $ = (require('jquery'))(dom.window);    //let's start extracting the data
-
-    let item = $('center');
-    console.log($(item).text());
-    results[el_name] = $(item).text();
-
-    if($(item).length === 0) {
-        drops[Object.size(results)+1] = el_name;
-    }
+    const $ = (require('jquery'))(dom.window);
+    let sentences = [];
+    let items = $('#mainsentencestable').children('tbody').children('tr');
+    $.each(items, function (i, el) {
+        let data_block = $(el).children('td')[0];
+        let text = $(data_block).text();
+        if(!text.includes('\n\nShow More Sentences\n\n\n')) {
+            sentences.push($(data_block).text());
+        }
+    });
+    results[el_name] = sentences; //.slice(0, 9);
 
     if(words_max === Object.size(results)) {
         logger.log(JSON.stringify(results));
-        logger.dump(JSON.stringify(drops));
         const end = new Date().getTime();
         console.log(`Total execution time: ${(end - start)/1000}s`);
     }
-    //logger.log($(item).text() + '\r\n');
 }

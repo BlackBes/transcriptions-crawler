@@ -1,27 +1,20 @@
-{
-  "96": "vol.",
-  "114": "w.l.r.",
-  "171": "wasn't",
-  "190": "we'd",
-  "193": "we've",
-  "236": "weren't",
-  "244": "what's",
-  "251": "when's",
-  "254": "where'd",
-  "255": "where's",
-  "274": "who'd",
-  "275": "who's",
-  "276": "who've",
-  "285": "why's",
-  "297": "wife's",
-  "356": "woman's",
-  "358": "women's",
-  "360": "won't",
-  "409": "would've",
-  "410": "wouldn't",
-  "449": "yesterday's",
-  "457": "you'd",
-  "458": "you'll",
-  "459": "you're",
-  "460": "you've"
-}
+<html>
+<head>
+<title></title>
+<script src='https://www.google.com/recaptcha/api.js?render=6LfZ2XMUAAAAACNYT_w6L_WsGykz3H6245k4v8JA'></script></head>
+<script>
+grecaptcha.ready(function() {
+    grecaptcha.execute('6LfZ2XMUAAAAACNYT_w6L_WsGykz3H6245k4v8JA', {action: '5071894236edae3b2e940b7fe66c4eacb0c5d75b'}).then(function(token) {
+        document.getElementById('sv').value = token;
+        document.getElementById('verifyForm').submit();
+    });
+});
+</script>
+<body>
+
+<form action="/what-is/recaptcha.bot" method="POST" id="verifyForm">
+    <input type="hidden" name="g-recaptcha-response" value="" id="sv"/>
+</form>
+
+</body>
+</html>
